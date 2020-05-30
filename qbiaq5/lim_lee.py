@@ -1,13 +1,12 @@
 import math
-import sys
 import random
+import sys
 import time
+
 from fastecdsa.curve import P521
 
 G = P521.G
-print(G)
-print(type(G))
-print(vars(G))
+
 alpha = 1  # this value is used in Cubaleska et al.
 
 
@@ -42,7 +41,7 @@ def find_optimal(l=160, S=10):
                     minCost = cost
                     parameters = (a, b)
                     break
-                elif minCost != sys.maxsize: #Cost starts climbing after achieving minimum
+                elif minCost != sys.maxsize:  # Cost starts climbing after achieving minimum
                     return minCost, parameters
     if minCost == sys.maxsize or storage > S:
         print('It is not possible to satisfy the requirements')
@@ -50,11 +49,8 @@ def find_optimal(l=160, S=10):
 
 
 def get_block(n, blockSize, i):
-    binary = bin(n)[2:]
-    binary = binary[::-1][i * blockSize:(i + 1) * blockSize][::-1]
-
     try:
-        return int(binary, 2)
+        return int(bin(n)[2:][::-1][i * blockSize:(i + 1) * blockSize][::-1], 2)
     except:
         return 0
 
@@ -64,10 +60,9 @@ def precompute(l, S, a, b):
     h = math.ceil(l / a)
     v = math.ceil(a / b)
 
-    res = [[0 * G for u in range(2 ** h)] for j in range(v)]
-
+    array = [[0 * G for u in range(2 ** h)] for j in range(v)]
     for u in range(1, 2 ** h):
-        res[0][u] = 0 * G
+        array[0][u] = 0 * G
 
         btmp = [int(char) for char in bin(u)[2:]]
 
@@ -75,17 +70,18 @@ def precompute(l, S, a, b):
         binary = [0] * (h)
         binary[l:] = btmp
 
-        for i in range(0, h):
+        for i in range(h):
             exponent = pow(2, i * a)
             r = G * exponent
-            res[0][u] += r * binary[-(i + 1)]
+            array[0][u] += r * binary[-(i + 1)]
 
         for j in range(1, v):
-            res[j][u] = res[0][u] * (pow(2, j * b))
+            array[j][u] = array[0][u] * (pow(2, j * b))
 
     t1 = time.perf_counter()
     print("Time elapsed for precomputation:", t1 - t0)
-    return res
+    print(array)
+    return array
 
 
 def findValue(e, res, a, b, l):

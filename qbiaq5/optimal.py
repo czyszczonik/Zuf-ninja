@@ -1,6 +1,6 @@
 import math
 import sys
-from decorators import benchmark
+from qbiaq5.decorators import benchmark
 
 _DEFAULT_ALPHA = 1
 h = lambda l, a: math.ceil(l / a)
@@ -10,6 +10,7 @@ vl = lambda a, b, l: math.ceil(al(l, a) / b)
 computeStorage = lambda a, b, l: ((2 ** h(l, a)) - 1) * vl(a, b, l) + (2 ** (h(l, a) - 1) - 1) * (v(a, b) - vl(a, b, l))
 computeCost = lambda a, b, l, alpha=_DEFAULT_ALPHA: ((2 ** (h(l, a) - 1)) - 1) / (2 ** (h(l, a) - 1)) * (a - al(l, a)) \
                                                     + (((2 ** h(l, a)) - 1) / (2 ** h(l, a))) * al(l, a) - 1 + alpha * (b - 1)
+
 
 @benchmark
 def find_optimal(length=160, storage=10):
